@@ -10,8 +10,13 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Cursor;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
 
 public class PigScreenOverride extends GuiScreen {
 	private boolean drawPigCursor;
@@ -28,7 +33,16 @@ public class PigScreenOverride extends GuiScreen {
 	}
 
 	public void setDrawPigCursor(boolean flag) {
-		Mouse.setGrabbed(flag);
+		Cursor cursor = null;
+		try {
+			if (flag) {
+				cursor = new Cursor(1, 1, 0, 0, 1, BufferUtils.createIntBuffer(1), null);
+			}
+
+			Mouse.setNativeCursor(cursor);
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+		}
 
 		drawPigCursor = flag;
 	}
@@ -58,7 +72,7 @@ public class PigScreenOverride extends GuiScreen {
 
 		boolean isDown = Mouse.isButtonDown(0);
 
-		pigSys.setCreateNewParticles(!wasPressed && isDown);
+		pigSys.setCreateNewParticles(!wasPressed && isDown && drawPigCursor);
 	}
 
 	private void renderCursorPig(int hoverX, int hoverY) {
