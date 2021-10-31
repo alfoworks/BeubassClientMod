@@ -1,0 +1,16 @@
+[
+{
+  "modid": "beubassclientmod",
+  "name": "BeubassClientMod",
+  "description": "Bringing Beubass to Minecraft.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Iterator"],
+  "credits": "Iterator",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

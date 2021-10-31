@@ -9,7 +9,7 @@ java.lang.NullPointerException: Rendering screen
 	at net.minecraft.client.gui.AbstractGui.drawString(AbstractGui.java:128) ~[forge-1.16.5-36.1.66_mapped_official_1.16.5-recomp.jar:?] {re:classloading,pl:runtimedistcleaner:A}
 	at com.iterator.beubassclientmod.gui.widget.ServerButton.renderState(ServerButton.java:124) ~[main/:?] {re:classloading}
 	at com.iterator.beubassclientmod.gui.widget.ServerButton.renderButton(ServerButton.java:146) ~[main/:?] {re:classloading}
-	at com.iterator.beubassclientmod.gui.widget.PhonkSoundButt.render(PhonkSoundButt.java:38) ~[main/:?] {re:classloading}
+	at com.iterator.beubassclientmod.gui.widget.BeuButton.render(PhonkSoundButt.java:38) ~[main/:?] {re:classloading}
 	at net.minecraft.client.gui.screen.Screen.render(Screen.java:76) ~[forge-1.16.5-36.1.66_mapped_official_1.16.5-recomp.jar:?] {re:classloading,pl:runtimedistcleaner:A}
 	at com.iterator.beubassclientmod.gui.screen.PhonkMenu.render(PhonkMenu.java:162) ~[main/:?] {re:classloading}
 	at net.minecraftforge.client.ForgeHooksClient.drawScreen(ForgeHooksClient.java:302) ~[forge-1.16.5-36.1.66_mapped_official_1.16.5-recomp.jar:?] {re:classloading}
@@ -40,7 +40,7 @@ Stacktrace:
 	at net.minecraft.client.gui.AbstractGui.drawString(AbstractGui.java:128) ~[forge:?] {re:classloading,pl:runtimedistcleaner:A}
 	at com.iterator.beubassclientmod.gui.widget.ServerButton.renderState(ServerButton.java:124) ~[?:?] {re:classloading}
 	at com.iterator.beubassclientmod.gui.widget.ServerButton.renderButton(ServerButton.java:146) ~[?:?] {re:classloading}
-	at com.iterator.beubassclientmod.gui.widget.PhonkSoundButt.render(PhonkSoundButt.java:38) ~[?:?] {re:classloading}
+	at com.iterator.beubassclientmod.gui.widget.BeuButton.render(PhonkSoundButt.java:38) ~[?:?] {re:classloading}
 	at net.minecraft.client.gui.screen.Screen.render(Screen.java:76) ~[forge:?] {re:classloading,pl:runtimedistcleaner:A}
 	at com.iterator.beubassclientmod.gui.screen.PhonkMenu.render(PhonkMenu.java:162) ~[?:?] {re:classloading}
 	at net.minecraftforge.client.ForgeHooksClient.drawScreen(ForgeHooksClient.java:302) ~[forge:?] {re:classloading}

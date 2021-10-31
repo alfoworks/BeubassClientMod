@@ -10,16 +10,15 @@ import com.iterator.beubassclientmod.gui.util.Beu;
 import com.iterator.beubassclientmod.gui.widget.RegularButt;
 import com.iterator.beubassclientmod.gui.widget.ServerButton;
 import com.iterator.beubassclientmod.sound.ModSounds;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.gui.screen.*;
-import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.gui.GuiOptions;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiWorldSelection;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.client.gui.screen.ModListScreen;
+import net.minecraftforge.fml.client.GuiModList;
 import org.lwjgl.opengl.GL11;
 
 import java.time.temporal.ChronoUnit;
@@ -29,7 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal") // Нет блядь, не может, я не хочу превращать этот класс в парад говнокода
-public class PhonkMenu extends Screen {
+public class PhonkMenu extends GuiScreen {
 	private final ResourceLocation LOGO = new ResourceLocation("beubassclientmod", "textures/gui/logo.png");
 
 	private final int PADDING_BOTTOM = 10;
@@ -64,12 +63,8 @@ public class PhonkMenu extends Screen {
 
 	private List<String> sponsors;
 
-	public PhonkMenu() {
-		super(new StringTextComponent("PhonkMenu"));
-	}
-
 	@Override
-	protected void init() {
+	public void initGui() {
 		// misc ========================= //
 
 		expirationDays = String.valueOf(ChronoUnit.DAYS.between(new Date().toInstant(), Constants.SERVER_EXPIRE_DATE.toInstant()));
@@ -103,27 +98,27 @@ public class PhonkMenu extends Screen {
 		this.addButton(serverButton);
 
 		int panelFarX = MAIN_PANEL_PADDING + MAIN_PANEL_WIDTH;
-
-		this.addButton(new RegularButt(this.MAIN_PANEL_PADDING + 10, this.height - 25, 30, new TranslationTextComponent("fml.menu.mods"), (sex) -> {
-			this.minecraft.setScreen(new ModListScreen(this));
+		
+		this.addButton(new RegularButt(this.MAIN_PANEL_PADDING + 10, this.height - 25, 30, I18n.format("fml.menu.mods"), (sex) -> {
+			this.mc.displayGuiScreen(new GuiModList(this));
 		}));
 
 		this.addButton(new RegularButt(panelFarX - 30, this.height - 25, Icons.TURN_OFF, (sex) -> {
-			this.minecraft.stop();
+			this.mc.shutdown();
 		}));
 
 		this.addButton(new RegularButt(panelFarX - 55, this.height - 25, Icons.SETTINGS, (sex) -> {
-			this.minecraft.setScreen(new OptionsScreen(this, this.minecraft.options));
+			this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
 		}));
 
 		this.addButton(new RegularButt(panelFarX - 80, this.height - 25, Icons.SINGLEPLAYER, (sex) -> {
-			this.minecraft.setScreen(new WorldSelectionScreen(this));
+			this.mc.displayGuiScreen(new GuiWorldSelection(this));
 		}));
 
 		this.addButton(new RegularButt(panelFarX - 105, this.height - 25, Icons.BEU, (sex) -> {
-			this.minecraft.setScreen(new VanyaScreen());
+			this.mc.displayGuiScreen(new VanyaScreen());
 		}));
-
+		 
 		// ============================== //
 
 		if (!initedOnce || beenRemoved) {
@@ -148,61 +143,61 @@ public class PhonkMenu extends Screen {
 	}
 
 	@Override
-	public void tick() {
+	public void updateScreen() {
 		if (!soundPlayed && blackAnim.startTime == 0) {
 			soundPlayed = true;
 
-			this.minecraft.getSoundManager().play(SimpleSound.forUI(ModSounds.MENU, 1.0F));
+			this.mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(ModSounds.MENU, 1.0F));
 		}
 	}
-
+	
 	@Override
-	public void removed() {
+	public void onGuiClosed() {
 		buttonUpdateThread.stop();
 		this.beenRemoved = true;
 	}
 
 	@Override
-	public void render(MatrixStack stack, int mouseX, int mouseY, float partialTicks) {
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		// bg
-		fill(stack, 0, 0, this.width, this.height, 0xFF121212);
+		drawRect(0, 0, this.width, this.height, 0xFF121212);
 
 		// main panel
-		fill(stack, MAIN_PANEL_PADDING, 0, MAIN_PANEL_PADDING + MAIN_PANEL_WIDTH, this.height, 0x20FFFFFF);
+		drawRect(MAIN_PANEL_PADDING, 0, MAIN_PANEL_PADDING + MAIN_PANEL_WIDTH, this.height, 0x20FFFFFF);
 
 		int sPanelX = width - SECONDARY_PANEL_WIDTH;
 		int gX = width - RG_WIDTH;
 		int tPanelY = PADDING_TOP;
 
 		// particles
-		sponsorsParticles.render(stack, width, height - PADDING_BOTTOM - SPONSORS_PANEL_HEIGHT);
+		sponsorsParticles.render(width, height - PADDING_BOTTOM - SPONSORS_PANEL_HEIGHT);
 
 		// time & sponsor gradients
-		Beu.drawGradient4c(stack, sPanelX, tPanelY, SECONDARY_PANEL_WIDTH, TIME_PANEL_HEIGHT, 0x00ffff00, 0xFF15c1ff, 0xFF15c1ff, 0x00ffff00);
-		Beu.drawGradient4c(stack, sPanelX, height - PADDING_BOTTOM - SPONSORS_PANEL_HEIGHT, SECONDARY_PANEL_WIDTH, SPONSORS_PANEL_HEIGHT, 0x00feb47b, 0xFFff7e5f, 0xFFff7e5f, 0x00feb47b);
+		Beu.drawGradient4c(sPanelX, tPanelY, SECONDARY_PANEL_WIDTH, TIME_PANEL_HEIGHT, 0x00ffff00, 0xFF15c1ff, 0xFF15c1ff, 0x00ffff00);
+		Beu.drawGradient4c(sPanelX, height - PADDING_BOTTOM - SPONSORS_PANEL_HEIGHT, SECONDARY_PANEL_WIDTH, SPONSORS_PANEL_HEIGHT, 0x00feb47b, 0xFFff7e5f, 0xFFff7e5f, 0x00feb47b);
 
 		// second panel
-		Beu.drawGradient4c(stack, sPanelX, 0, SECONDARY_PANEL_WIDTH, height, 0x00614385, 0xFF516395, 0xff516395, 0x00614385);
+		Beu.drawGradient4c(sPanelX, 0, SECONDARY_PANEL_WIDTH, height, 0x00614385, 0xFF516395, 0xff516395, 0x00614385);
 
 		// time & sponsor texts
-		ITextComponent expirationComponent = new TranslationTextComponent("menu.expiration", expirationDays);
+		String expirationComponent = I18n.format("menu.expiration", expirationDays);
 
-		drawString(stack, this.minecraft.font, expirationComponent, width - 10 - this.minecraft.font.width(expirationComponent), (tPanelY + TIME_PANEL_HEIGHT / 2) - font.lineHeight / 2, 0xFFFFFFFF);
+		drawString(this.fontRenderer, expirationComponent, width - 10 - this.fontRenderer.getStringWidth(expirationComponent), (tPanelY + TIME_PANEL_HEIGHT / 2) - this.fontRenderer.FONT_HEIGHT / 2, 0xFFFFFFFF);
 
-		ITextComponent sponsorsTitle = new TranslationTextComponent("menu.sponsors");
+		String sponsorsTitle = I18n.format("menu.sponsors");
 
-		drawString(stack, this.minecraft.font, sponsorsTitle, width - 10 - this.minecraft.font.width(sponsorsTitle), height - PADDING_BOTTOM - SPONSORS_PANEL_HEIGHT + 4, 0xFFFFFFFF);
+		drawString(this.fontRenderer, sponsorsTitle, width - 10 - this.fontRenderer.getStringWidth(sponsorsTitle), height - PADDING_BOTTOM - SPONSORS_PANEL_HEIGHT + 4, 0xFFFFFFFF);
 
 		for (int i = 0; i < sponsors.size(); i++) {
 			String s = sponsors.get(i);
-			drawString(stack, this.font, s, width - 10 - font.width(s), height - PADDING_BOTTOM - SPONSORS_PANEL_HEIGHT + (25 + i * 9), 0xFFFFFFFF);
+			drawString(this.fontRenderer, s, width - 10 - this.fontRenderer.getStringWidth(s), height - PADDING_BOTTOM - SPONSORS_PANEL_HEIGHT + (25 + i * 9), 0xFFFFFFFF);
 		}
 
 		// logo
 		int logoX = 27;
 		int logoY = PADDING_TOP + BEUBASS_WAVES_Y_OFFSET;
 
-		this.minecraft.getTextureManager().bind(LOGO);
+		this.mc.getTextureManager().bindTexture(LOGO);
 
 		float magicX = logoX + 128;
 		float magicY = logoY + 25.55F;
@@ -215,39 +210,39 @@ public class PhonkMenu extends Screen {
 		GL11.glRotatef(coOffset, 0, 0, 1F);
 		GL11.glTranslatef(-magicX, -magicY, 0);
 
-		this.renderBeubassLogo(stack, logoX, logoY, 1.0F, 0.0F, 0.0F, coOffset);
-		this.renderBeubassLogo(stack, logoX, logoY, 0.0F, 0.0F, 1.0F, -coOffset);
-		this.renderBeubassLogo(stack, logoX, logoY, 1.0F, 1.0F, 1.0F, 0);
+		this.renderBeubassLogo(logoX, logoY, 1.0F, 0.0F, 0.0F, coOffset);
+		this.renderBeubassLogo(logoX, logoY, 0.0F, 0.0F, 1.0F, -coOffset);
+		this.renderBeubassLogo(logoX, logoY, 1.0F, 1.0F, 1.0F, 0);
 
 		GL11.glPopMatrix();
 
-		renderBeubassWaves(stack, logoX, logoY - BEUBASS_WAVES_Y_OFFSET);
+		renderBeubassWaves(logoX, logoY - BEUBASS_WAVES_Y_OFFSET);
 
-		this.renderPrivateServer(stack, MAIN_PANEL_PADDING + (MAIN_PANEL_WIDTH / 2 - PSERVER_WIDTH / 2), 75);
+		this.renderPrivateServer(MAIN_PANEL_PADDING + (MAIN_PANEL_WIDTH / 2 - PSERVER_WIDTH / 2), 75);
 
-		super.render(stack, mouseX, mouseY, partialTicks);
+		super.drawScreen(mouseX, mouseY, partialTicks);
 
 		if (blackAnim.startTime != 0) {
-			fill(stack, 0, 0, width, height, Beu.getColorWithAlpha(0xFF000000, blackAnim.getValue()));
+			drawRect(0, 0, width, height, Beu.getColorWithAlpha(0xFF000000, blackAnim.getValue()));
 		}
 	}
 
 	// ================================================== //
 
-	private void renderBeubassLogo(MatrixStack stack, int x, int y, float r, float g, float b, float offset) {
+	private void renderBeubassLogo(int x, int y, float r, float g, float b, float offset) {
 		GL11.glPushMatrix();
-		RenderSystem.color3f(r, g, b);
+		GlStateManager.color(r, g, b);
 		GL11.glTranslatef(offset, offset, offset);
-		Beu.renderTexture(stack, x, y, 0, 56.1F, 256, 21, 256, 257);
+		Beu.renderTexture(x, y, 0, 56.1F, 256, 21, 256, 257);
 		GL11.glPopMatrix();
 	}
 
-	private void renderPrivateServer(MatrixStack stack, int x, int y) {
-		Beu.renderTexture(stack, x, y, 0, 77F, 256, 21, 256, 256);
+	private void renderPrivateServer(int x, int y) {
+		Beu.renderTexture(x, y, 0, 77F, 256, 21, 256, 256);
 	}
 
-	private void renderBeubassWaves(MatrixStack stack, int x, int y) {
-		Beu.renderTexture(stack, x, y, 0, 0, 256, 56, 256, 256);
+	private void renderBeubassWaves(int x, int y) {
+		Beu.renderTexture(x, y, 0, 0, 256, 56, 256, 256);
 	}
 
 	private static String[][] splitArray(String[] arrayToSplit, int chunkSize){

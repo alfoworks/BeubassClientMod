@@ -143,7 +143,7 @@ public class MCPing {
             JsonObject descriptionJsonObject = jsonObject.get("description").getAsJsonObject();
 
             if (descriptionJsonObject.has("extra")) {
-                descriptionJsonObject.addProperty("text", ITextComponent.Serializer.fromJson(descriptionJsonObject.get("extra").getAsJsonArray().toString()).getString());
+                descriptionJsonObject.addProperty("text", ITextComponent.Serializer.jsonToComponent(descriptionJsonObject.get("extra").getAsJsonArray().toString()).getFormattedText());
                 jsonObject.add("description", descriptionJsonObject);
             }
 
