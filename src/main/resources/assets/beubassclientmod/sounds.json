@@ -1,0 +1,24 @@
+{
+  "phonk": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "beubassclientmod:phonk",
+        "stream": false
+      },
+      {
+        "name": "beubassclientmod:phonk2",
+        "stream": false
+      }
+    ]
+  },
+  "menu": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "beubassclientmod:menu",
+        "stream": false
+      }
+    ]
+  }
+}
