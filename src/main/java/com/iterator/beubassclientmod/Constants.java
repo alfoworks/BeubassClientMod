@@ -9,7 +9,7 @@ public class Constants {
 
 	static {
 		try {
-			SERVER_EXPIRE_DATE = new SimpleDateFormat("yyyy-MM-dd").parse("2021-10-27");
+			SERVER_EXPIRE_DATE = new SimpleDateFormat("yyyy-MM-dd").parse("2021-12-07");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

@@ -25,7 +25,7 @@ public class ServerButton extends BeuButton {
 	String onlineString = "none";
 	GuiScreen prevScreen;
 
-	private final MCPingOptions options = new MCPingOptions("eu.mineplex.com", 25565);
+	private final MCPingOptions options = new MCPingOptions("beubass.ru", 27041);
 
 	private long clickTime;
 
